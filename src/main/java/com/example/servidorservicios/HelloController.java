@@ -44,6 +44,10 @@ public class HelloController {
     String sUser = "emilio";
     String sPassword = "psp234";
     FTPClient client = new FTPClient();
+
+    public HelloController(){
+        iniciarServidor();
+    }
     public void iniciarServidor(){
         try {
 
@@ -54,12 +58,12 @@ public class HelloController {
 
             //ftpClient.enterLocalPassiveMode();
             // APPROACH #1: uploads first file using an InputStream
-            File firstLocalFile = new File("/home/usuario/Imágenes/Aules.png");
+            File firstLocalFile = new File("C:\\Users\\2dam01\\Desktop\\Nueva carpeta (3)\\coche_informe_serv.pdf");
             long inicio = System.currentTimeMillis();
             long tamanyo = firstLocalFile.length();
 
 
-            String firstRemoteFile = "Aules.png";
+            String firstRemoteFile = "coche_informe_serv.pdf";
             InputStream inputStream;
             inputStream = new FileInputStream(firstLocalFile);
 
