@@ -66,6 +66,7 @@ public class HelloController {
                 String[] dividirRemotoFile = urlTextField.getText().split("/");
                 for (int i = 0; i < dividirRemotoFile.length; i++) {
                     contador++;
+
                 }
 
                 fileUrl = urlTextField.getText();
@@ -93,12 +94,16 @@ public class HelloController {
 
     @FXML
     protected void onEnviarButtonClick() {
+        FTPClient ftpClient = new FTPClient();
         try{
+            ftpClient.connect(sFTP);
+            ftpClient.login(sUser, sPassword);
+
             InputStream inputStream;
             inputStream = new FileInputStream(fileRemotoUrl);
 
             boolean done;
-            done = client.storeFile(fileRemotoUrl, inputStream);
+            done = ftpClient.storeFile(fileRemotoUrl, inputStream);
             if (done) {
                 textoDinamico = new Text("------ Fichero cargado con éxito");
                 vBoxInformacion.getChildren().add(textoDinamico);
@@ -110,7 +115,7 @@ public class HelloController {
             enviarCorreo(emailTo, emailSubject, emailBody);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
+        } /*finally {
         try {
             if (client.isConnected()) {
                 client.logout();
@@ -119,7 +124,7 @@ public class HelloController {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-     }
+     }*/
 
     }
     public HelloController(){

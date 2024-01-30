@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f4335e11-70b1-4240-a676-8a32823f86b5" name="Changes" comment="Practica Servicios 29/01/2024">
+    <list default="true" id="f4335e11-70b1-4240-a676-8a32823f86b5" name="Changes" comment="Practica Servicios 30/01/2024">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PNG_transparency_demonstration_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sandia.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/servidorservicios/ConexionURL.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/servidorservicios/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/servidorservicios/HelloController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -96,13 +93,30 @@
       <option name="project" value="LOCAL" />
       <updated>1706533735232</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Practica Servicios 30/01/2024">
+      <option name="closed" value="true" />
+      <created>1706612389705</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1706612389705</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Practica Servicios 30/01/2024">
+      <option name="closed" value="true" />
+      <created>1706612395559</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1706612395559</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Practica Servicios 25/01/2024" />
     <MESSAGE value="Practica Servicios 26/01/2024" />
     <MESSAGE value="Practica Servicios 29/01/2024" />
-    <option name="LAST_COMMIT_MESSAGE" value="Practica Servicios 29/01/2024" />
+    <MESSAGE value="Practica Servicios 30/01/2024" />
+    <option name="LAST_COMMIT_MESSAGE" value="Practica Servicios 30/01/2024" />
   </component>
 </project>
