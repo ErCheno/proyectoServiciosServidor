@@ -2,25 +2,18 @@ package com.example.servidorservicios;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
+import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPReply;
 
-import javax.net.ssl.ExtendedSSLSession;
 import java.io.*;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.Properties;
 
 public class HelloController {
@@ -29,7 +22,7 @@ public class HelloController {
     @FXML
     private TextField usuarioTextField;
     @FXML
-    private TextField claveTextField;
+    private PasswordField claveTextField;
     @FXML
     private TextField urlTextField;
     @FXML
@@ -97,16 +90,33 @@ public class HelloController {
         FTPClient ftpClient = new FTPClient();
         try{
             ftpClient.connect(sFTP);
-            ftpClient.login(sUser, sPassword);
+            ftpClient.login(usuarioTextField.getText(), claveTextField.getText());
 
-            InputStream inputStream;
-            inputStream = new FileInputStream(fileRemotoUrl);
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            //ftpClient.enterLocalPassiveMode();
 
-            boolean done;
-            done = ftpClient.storeFile(fileRemotoUrl, inputStream);
+            long inicio=System.currentTimeMillis();
+            long tamanyo=fileUrl.length();
+
+
+
+            File firstLocalFile = new File("C:/Users/emili/IdeaProjects/proyectoServiciosServidor/gatocomuneuropeo.jpeg");
+            System.out.println(fileRemotoUrl);
+            InputStream inputStream = new FileInputStream(firstLocalFile);
+            long tiempofinal=System.currentTimeMillis();
+
+            boolean done = ftpClient.storeFile(fileRemotoUrl, inputStream);
+            inputStream.close();
+            System.out.println("The first file is uploaded successfully. "+tamanyo+" bytes en "+
+                    (tiempofinal-inicio)/1000+" b/s");
+
+            ftpClient.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
+
             if (done) {
                 textoDinamico = new Text("------ Fichero cargado con éxito");
                 vBoxInformacion.getChildren().add(textoDinamico);
+            }else {
+                System.out.println("El fichero no se envió");
             }
             emailBody = "Transferencia exitosa:\n" +
                     "Servidor FTP: " + sFTP + "\n" +
@@ -114,33 +124,33 @@ public class HelloController {
                     "Archivo: " + fileUrl;
             enviarCorreo(emailTo, emailSubject, emailBody);
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } /*finally {
+            System.out.println("Error: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
         try {
-            if (client.isConnected()) {
-                client.logout();
-                client.disconnect();
+            if (ftpClient.isConnected()) {
+                ftpClient.logout();
+                ftpClient.disconnect();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-     }*/
+     }
 
     }
     public HelloController(){
         iniciarServidor();
     }
     private static void enviarCorreo(String to, String subject, String body) {
- /*       String from = "tu_correo@gmail.com";
-        String password = "tu_contraseña_correo";
+       /* final Properties prop = new Properties();
+        prop.put("mail.smtp.username", "usuario@gmail.com");
+        prop.put("mail.smtp.password", "passwordEmail");
+        prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true"); // TLS
 
-        Properties properties = new Properties();
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", "smtp.gmail.com");
-        properties.put("mail.smtp.port", "587");
-
-        ExtendedSSLSession session = ExtendedSSLSession.getInstance(properties, new Authenticator() {
+        Session session = ExtendedSSLSession.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(from, password);
@@ -229,8 +239,7 @@ public class HelloController {
     public String comprobadorFichero(String ruta){
         int indexPunto = ruta.lastIndexOf('.');
         if (indexPunto != -1 && indexPunto < ruta.length() - 1){
-            String tipo = ruta.substring(indexPunto + 1).toLowerCase();
-            return tipo;
+            return ruta.substring(indexPunto + 1).toLowerCase();
         }
         return null;
     }
