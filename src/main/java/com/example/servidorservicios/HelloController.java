@@ -5,18 +5,23 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.Properties;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class HelloController {
+
+    //Atributos FXML
+
     @FXML
     private Label welcomeText;
     @FXML
@@ -34,6 +39,8 @@ public class HelloController {
     @FXML
     private VBox vBoxInformacion;
 
+
+    //Atributos para conectarse al server FTP
     private String fileUrl = "";
     private String fileRemotoUrl = "";
     String sFTP = "localhost";
@@ -51,12 +58,12 @@ public class HelloController {
     @FXML
     protected void onCargarButtonClick() {
         try{
-            textoDinamico = new Text("Bienvenidos a la prueba de servicios");
+            textoDinamico = new Text("--------------------------\nBienvenidos a la prueba de servicios");
             vBoxInformacion.getChildren().add(textoDinamico);
 
             String tipoArchivo = comprobadorFichero(urlTextField.getText());
             if (tipoArchivo != null){
-                String[] dividirRemotoFile = urlTextField.getText().split("/");
+                String[] dividirRemotoFile = urlTextField.getText().split("/"); //Para dividir el fichero con solo el nombre
                 for (int i = 0; i < dividirRemotoFile.length; i++) {
                     contador++;
 
@@ -66,7 +73,7 @@ public class HelloController {
                 contador = Math.min(contador, dividirRemotoFile.length - 1);
                 fileRemotoUrl = dividirRemotoFile[contador];
 
-                textoDinamico = new Text("Fichero: "+fileRemotoUrl);
+                textoDinamico = new Text("--------------------------\nFichero: "+fileRemotoUrl+"\n"+" Fichero cargado con éxito");
                 vBoxInformacion.getChildren().add(textoDinamico);
 
                 descargarArchivo(fileUrl);
@@ -74,13 +81,23 @@ public class HelloController {
 
 
 
-        }catch (ArrayIndexOutOfBoundsException ex){
+        }catch (FileNotFoundException ex){
+            mostrarError("Fichero no encontrado");
+        }
+        catch (ArrayIndexOutOfBoundsException ex){
             mostrarError("Debe de añadir el archivo");
         } catch (IOException ex) {
             System.out.println("Error: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
+
+    /**
+     * Este método comprueba si el fichero es correcto
+     * y posteriormente carga el fichero en cuestión
+     *
+     * Mediante un split se divide el fichero de ruta absoluta a remota
+     */
 
 
 
@@ -90,40 +107,70 @@ public class HelloController {
         FTPClient ftpClient = new FTPClient();
         try{
             ftpClient.connect(sFTP);
-            ftpClient.login(usuarioTextField.getText(), claveTextField.getText());
+            mostrarRespuestaServidor(ftpClient);
+            int replyCode = ftpClient.getReplyCode();
+            textoDinamico = new Text("Conectando con el servidor FTP");
+            vBoxInformacion.getChildren().add(textoDinamico);
+            if (!FTPReply.isPositiveCompletion(replyCode)) {
+                textoDinamico = new Text("Conexión fallida");
+                vBoxInformacion.getChildren().add(textoDinamico);
+                return;
+            }
 
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-            //ftpClient.enterLocalPassiveMode();
 
+            boolean loginHecho = ftpClient.login(usuarioTextField.getText(), claveTextField.getText());
+            mostrarRespuestaServidor(ftpClient);
+
+            if (!loginHecho) {
+                textoDinamico = new Text("No se pudo logear al servidor");
+                vBoxInformacion.getChildren().add(textoDinamico);
+                return;
+            }
             long inicio=System.currentTimeMillis();
             long tamanyo=fileUrl.length();
 
-
-
-            File firstLocalFile = new File("C:/Users/emili/IdeaProjects/proyectoServiciosServidor/gatocomuneuropeo.jpeg");
-            System.out.println(fileRemotoUrl);
-            InputStream inputStream = new FileInputStream(firstLocalFile);
+            InputStream inputStream = new FileInputStream(fileRemotoUrl);
             long tiempofinal=System.currentTimeMillis();
 
-            boolean done = ftpClient.storeFile(fileRemotoUrl, inputStream);
-            inputStream.close();
-            System.out.println("The first file is uploaded successfully. "+tamanyo+" bytes en "+
+            textoDinamico = new Text("El fichero se subió correctamente. "+tamanyo+" bytes en "+
                     (tiempofinal-inicio)/1000+" b/s");
+            vBoxInformacion.getChildren().add(textoDinamico);
 
-            ftpClient.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
+            boolean done = ftpClient.storeFile(fileRemotoUrl, inputStream);
 
             if (done) {
-                textoDinamico = new Text("------ Fichero cargado con éxito");
+                textoDinamico = new Text("Conseguido el enviar fichero por FTP");
                 vBoxInformacion.getChildren().add(textoDinamico);
             }else {
                 System.out.println("El fichero no se envió");
             }
+            FTPFile[] files1 = ftpClient.listFiles(fileRemotoUrl);
+            if (files1!=null){
+                imprimirDetallesFichero(files1);
+            }
+
+            String[] files2 = ftpClient.listNames();
+            if (files2 != null){
+                imprimirNombres(files2);
+            }
+
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            //ftpClient.enterLocalPassiveMode();
+
+
+
+            inputStream.close();
+
             emailBody = "Transferencia exitosa:\n" +
                     "Servidor FTP: " + sFTP + "\n" +
                     "Usuario FTP: " + sUser + "\n" +
                     "Archivo: " + fileUrl;
             enviarCorreo(emailTo, emailSubject, emailBody);
-        } catch (IOException e) {
+        }catch (FileNotFoundException ex){
+            mostrarError("Fichero no encontrado");
+        }
+
+        catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
         } finally {
@@ -131,13 +178,22 @@ public class HelloController {
             if (ftpClient.isConnected()) {
                 ftpClient.logout();
                 ftpClient.disconnect();
+                textoDinamico = new Text("Se ha desconectado");
+                vBoxInformacion.getChildren().add(textoDinamico);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
      }
-
     }
+
+    /**
+     * El método crea dentro de él un nuevo FTPClient para conectarse nuevamente
+     * Y mediante otros métodos se muestra toda la información de los ficheros
+     *
+     * Si no se encuentra el fichero mostrará un Alert de tipo ERROR
+     */
+
     public HelloController(){
         iniciarServidor();
     }
@@ -219,13 +275,6 @@ public class HelloController {
 
 
     public void iniciarServidor(){
-        Platform.runLater(()->{
-            ftpTextField.setText(sFTP);
-            usuarioTextField.setText(sUser);
-            claveTextField.setText(sPassword);
-            puertoServTextField.setText(String.valueOf(port));
-        });
-
         try {
             client.connect(sFTP);
             client.login(sUser, sPassword);
@@ -234,7 +283,17 @@ public class HelloController {
             System.out.println("Error: " + ex.getMessage());
             ex.printStackTrace();
         }
+        Platform.runLater(()->{
+            usuarioTextField.setText(sUser);
+            ftpTextField.setText(sFTP);
+            claveTextField.setText(sPassword);
+            puertoServTextField.setText(String.valueOf(port));
+        });
+
+
     }
+
+
 
     public String comprobadorFichero(String ruta){
         int indexPunto = ruta.lastIndexOf('.');
@@ -244,14 +303,28 @@ public class HelloController {
         return null;
     }
 
-    private static void mostrarRespuestaServidor(FTPClient ftpClient) {
+    /**
+     * Se comprueba el punto final de la ruta pasada por parámetro
+     * y se verifica que se haya encontrado un punto y que el punto no sea el último carácter de la cadena
+     * Si no se encuentra un punto en la cadena el método devuelve null
+     * @param ftpClient
+     */
+
+    private void mostrarRespuestaServidor(FTPClient ftpClient) {
         String[] replies = ftpClient.getReplyStrings();
         if (replies != null & replies.length > 0) {
             for (String aReply : replies) {
-                System.out.println("SERVER: " + aReply);
+                textoDinamico = new Text("SERVER: " + aReply);
+                vBoxInformacion.getChildren().add(textoDinamico);
+
             }
         }
     }
+
+    /**
+     * Recoge las respuestas del servidor FTP después de realizar una operación
+     * @param mensaje
+     */
     private void mostrarError(String mensaje) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -261,6 +334,33 @@ public class HelloController {
             alert.setContentText(mensaje);
             alert.showAndWait();
         });
+    }
+    private void imprimirDetallesFichero(FTPFile[] files) {
+        DateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (FTPFile file : files) {
+            String details = file.getName();
+            if (file.isDirectory()) {
+                details = "[" + details + "]";
+            }
+            details += "\t\t" + file.getSize();
+            details += "\t\t" + dateFormater.format(file.getTimestamp().getTime());
+
+            textoDinamico = new Text("--------------------------\nDetalles: \n"+details+"\n--------------------------\n");
+            vBoxInformacion.getChildren().add(textoDinamico);
+
+        }
+    }
+    private void imprimirNombres(String[] files) {
+        if (files != null & files.length > 0) {
+            textoDinamico = new Text("--------------------------\nFicheros:");
+            vBoxInformacion.getChildren().add(textoDinamico);
+            for (String aFile: files) {
+                textoDinamico = new Text(aFile);
+                vBoxInformacion.getChildren().add(textoDinamico);
+            }
+            textoDinamico = new Text("--------------------------");
+            vBoxInformacion.getChildren().add(textoDinamico);
+        }
     }
 
 }

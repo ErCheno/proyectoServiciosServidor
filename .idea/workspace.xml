@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f4335e11-70b1-4240-a676-8a32823f86b5" name="Changes" comment="Practica Servicios 30/01/2024">
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="f4335e11-70b1-4240-a676-8a32823f86b5" name="Changes" comment="Practica Servicios... 30/01/2024">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Instagram_icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Thunderstorm-lightning-strike-shutterstock_1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gatocomuneuropeo.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ppjamon-cebo-plato-gigapixel-standard-scale-4_00x-1024x576.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/sandia.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/servidorservicios/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/servidorservicios/HelloController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/com/example/servidorservicios/hello-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/com/example/servidorservicios/hello-view.fxml" afterDir="false" />
     </list>
@@ -39,7 +41,8 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.HelloApplication.executor": "Debug",
+    "Application.HelloApplication.executor": "Run",
+    "Application.SubirArchivo.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
@@ -128,7 +131,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706612395559</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Practica Servicios... 30/01/2024">
+      <option name="closed" value="true" />
+      <created>1706654357391</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1706654357391</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -136,6 +147,7 @@
     <MESSAGE value="Practica Servicios 26/01/2024" />
     <MESSAGE value="Practica Servicios 29/01/2024" />
     <MESSAGE value="Practica Servicios 30/01/2024" />
-    <option name="LAST_COMMIT_MESSAGE" value="Practica Servicios 30/01/2024" />
+    <MESSAGE value="Practica Servicios... 30/01/2024" />
+    <option name="LAST_COMMIT_MESSAGE" value="Practica Servicios... 30/01/2024" />
   </component>
 </project>
