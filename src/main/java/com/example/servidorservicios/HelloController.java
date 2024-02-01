@@ -1,5 +1,6 @@
 package com.example.servidorservicios;
 
+import jakarta.mail.internet.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -17,7 +18,8 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
+import java.util.Properties;
+import jakarta.mail.*;
 public class HelloController {
 
     //Atributos FXML
@@ -48,7 +50,9 @@ public class HelloController {
     String sUser = "emilio";
     String sPassword = "123";
     FTPClient client = new FTPClient();
-    String emailTo = "jesua.educa@gmail.com";
+    String from = "emiliojesus786@gmail.com";
+    String password = "pavycnhvpzwawihp";
+    String emailTo = "pikachuloko98@gmail.com";
     String emailSubject = "Informe de Transferencia";
     String emailBody;
     Text textoDinamico;
@@ -198,33 +202,51 @@ public class HelloController {
         iniciarServidor();
     }
     private static void enviarCorreo(String to, String subject, String body) {
-       /* final Properties prop = new Properties();
-        prop.put("mail.smtp.username", "usuario@gmail.com");
-        prop.put("mail.smtp.password", "passwordEmail");
+        Properties prop = new Properties();
+        prop.put("mail.smtp.username", "emiliojesus786@gmail.com");
+        prop.put("mail.smtp.password", "pavycnhvpzwawihp");
         prop.put("mail.smtp.host", "smtp.gmail.com");
         prop.put("mail.smtp.port", "587");
         prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.starttls.enable", "true"); // TLS
 
-        Session session = ExtendedSSLSession.getInstance(properties, new Authenticator() {
+        Session session = Session.getInstance(prop, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(from, password);
+                return new PasswordAuthentication(prop.getProperty("mail.smtp.username"), prop.getProperty("mail.smtp.password"));
             }
         });
         try {
-        MessageFormat message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(from));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-        message.setSubject(subject);
-        message.setText(body);
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress("emiliojesus786@gmail.com"));
+            //InternetAddress[] toEmailAddresses = InternetAddress.parse("emiliojesus786@gmail.com, pikachuloko98@gmail.com");
 
-        Transport.send(message);
+   /*         Multipart multipart = getMultipart();
+            message.setContent(multipart);*/
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+            message.setSubject(subject);
+            message.setText(body);
 
-        System.out.println("Correo electrónico enviado.");
-        } catch (IOException e) {
+            Transport.send(message);
+
+            System.out.println("Correo electrónico enviado.");
+        } catch (MessagingException e) {
             e.printStackTrace();
-        }*/
+        }
+    }
+
+    private static Multipart getMultipart() throws MessagingException, IOException {
+        Multipart multipart = new MimeMultipart();
+
+        MimeBodyPart messageBodyPart = new MimeBodyPart();
+        messageBodyPart.setText("Please find the attachment sent using Jakarta Mail");
+        multipart.addBodyPart(messageBodyPart);
+        messageBodyPart = new MimeBodyPart();
+        String filename = "C:\\Users\\2dam01\\Desktop\\servidorServicios\\FileZilla\\1024px-Collage_of_Six_Cats-02.jpg";
+        messageBodyPart.attachFile(filename);
+        // Add the BodyPart to the Multipart object
+        multipart.addBodyPart(messageBodyPart);
+        return multipart;
     }
 
     private String descargarArchivo(String url) throws IOException {
